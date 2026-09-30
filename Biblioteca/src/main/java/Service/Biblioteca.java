@@ -1,5 +1,7 @@
 package Service;
 
+import DAO.LivrosDAO;
+import DAO.UsuarioDAO;
 import Model.Livros;
 import Model.Usuario;
 
@@ -10,7 +12,8 @@ public class Biblioteca {
 
     List<Livros> listaLivros = new ArrayList<>();
     List<Usuario> listaUsuarios = new ArrayList<>();
-
+    private final LivrosDAO livroDAO = new LivrosDAO();
+    private final UsuarioDAO usuarioDAO = new UsuarioDAO();
 
     //======================
     //CADASTRAR LIVRO
@@ -97,16 +100,12 @@ public class Biblioteca {
     //Emprestar Livros
     //======================
 
-    public void EmprestarLivro(String titulo, String cpf){
-        Livros livro = buscarLivro(titulo);
-        Usuario usuario = buscarUsuario(cpf);
+    public void EmprestarLivro(Long idLivro, Long idUsuario){
+
+        Livros livro = LivrosDAO.buscarPorId(idLivro);
 
         if (livro == null){
             System.out.println("Livro não encontrado");
-            return;
-        }
-        if (usuario == null){
-            System.out.println("Usuário não encontrado");
             return;
         }
         if (!livro.isDisponivel()){
@@ -114,6 +113,14 @@ public class Biblioteca {
             return;
 
         }
+
+        Usuario usuario = usuarioDAO.buscarUsuario(idUsuario);
+
+        if (usuario == null){
+            System.out.println("Usuário não encontrado");
+            return;
+        }
+
         boolean adicionou = usuario.adicionarLivro(livro);
 
         if(!adicionou){
@@ -128,26 +135,21 @@ public class Biblioteca {
     //Devolver Livros
     //======================
 
-    public void DevolverLivro(String titulo,  String cpf){
-        Livros livro = buscarLivro(titulo);
-        Usuario usuario = buscarUsuario(cpf);
-        if(livro == null){
+    public void DevolverLivro(Long idLivro){
+        Livros livros = livroDAO.buscarPorId(idLivro);
+
+        if(livros == null){
             System.out.println("Livro não encontrado");
             return;
         }
-        if (usuario == null){
-            System.out.println("Usuário não encontrado");
-            return;
 
-        }
+        if (livros.isDisponivel()){
+            System.out.println("Esse livro já está disponivel");
 
-        boolean removeu = usuario.devolverLivro(livro);
-
-        if(!removeu){
             return;
         }
-        livro.devolverLivro();
-        System.out.println("Devolução realizada com sucesso para o usuario.");
+        livroDAO.devolverLivro(idLivro);
+
     }
 
     //======================

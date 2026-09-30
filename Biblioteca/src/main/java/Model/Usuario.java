@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Usuario {
 
-    private static Long proximoId = 2L;
+
     private Long id;
     private String nome;
     private String cpf;
@@ -27,7 +27,7 @@ public class Usuario {
             System.out.println("CPF inválido");
         }
 
-        this.id = proximoId++;
+
         this.nome = nome;
         this.cpf = cpf;
         this.email = email;
@@ -37,7 +37,6 @@ public class Usuario {
     }
 
     public Usuario(String nome, String cpf, String email, String telefone) {
-        this.id = proximoId++;
         this.nome = nome;
         this.cpf = cpf;
         this.email = email;
@@ -65,6 +64,9 @@ public class Usuario {
     public Long getId(){
         return id;
 
+    }
+    public void setID(long id) {
+        this.id = id;
     }
 
     public String getNome(){
@@ -97,7 +99,7 @@ public class Usuario {
 
     @Override
     public String toString(){
-        return "ID" + id
+        return "ID: " + id
                 + "\nNome: " + nome
                 + "\nCPF: " + cpf
                 + "\nEmail: " + email

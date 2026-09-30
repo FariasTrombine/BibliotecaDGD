@@ -2,6 +2,8 @@ package Principal;
 
 
 
+import DAO.LivrosDAO;
+import DAO.UsuarioDAO;
 import Model.Livros;
 import Model.Usuario;
 import Service.Biblioteca;
@@ -9,6 +11,7 @@ import Service.Biblioteca;
 import javax.crypto.SealedObject;
 import javax.crypto.spec.PSource;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Principal {
@@ -18,6 +21,9 @@ public class Principal {
     private  Scanner leitura  = new Scanner(System.in);
     ArrayList<Livros> listaLivros = new ArrayList<Livros>();
     private Biblioteca biblioteca = new Biblioteca();
+    private UsuarioDAO usarioDAO = new UsuarioDAO();
+    private LivrosDAO livrosDAO = new LivrosDAO();
+
 
 
     public void exibeMenu(){
@@ -107,7 +113,8 @@ public class Principal {
             String autor = leitura.nextLine();
 
             Livros livro = new Livros(titulo, autor);
-            biblioteca.CadastrarLivros(livro);
+
+            livrosDAO.cadastrarLivros(livro);
 
             System.out.println("Livro cadastrado com id: " + livro.getIdLivro());
 
@@ -141,54 +148,66 @@ public class Principal {
             String email = leitura.nextLine();
             System.out.println("Digite o telefone do usuario: ");
             String telefone = leitura.nextLine();
-
             Usuario usuario = new Usuario(nome, cpf, email, telefone);
-            biblioteca.CadastrarUsuarios(usuario);
 
-            System.out.println("Usuario Cadastrado com sucesso, ID do usuario " + usuario.getId() + ", Nome de Usuario: " + usuario.getNome());
+            usarioDAO.cadastrarUsuari(usuario);
+
+            System.out.println("ID: " + usuario.getId());
+            System.out.println("Nome: " + usuario.getNome());
+            System.out.println("CPF: " + usuario.getCpf());
+            System.out.println("Email: " + usuario.getEmail());
         }
         System.out.println("======= CADASTRO FINALIZADO ======");
     }
 
 
     private void listaLivros() {
-        System.out.println("\n====== LISTA DE LIVROS ======");
-        biblioteca.listarLivros();
-    }
+        List<Livros> livros = LivrosDAO.listar();
+            if (livros.isEmpty()) {
+                System.out.println("Nenhum livro cadastrado.");
+                return;
+            }
+            System.out.println("\n====== LIVROS CADASTRADOS ======");
+            for (Livros livro : livros) {
+                System.out.println(livro);
+            }
+
+        }
 
 
     private void listarUsuarios() {
-        System.out.println("\n====== LISTA DE USUARIOS ======");
-        biblioteca.listarUsuarios();
+
+        List<Usuario> usuarios = UsuarioDAO.listarUsuario();
+
+        if (usuarios.isEmpty()) {
+            System.out.println("Nenhum usuario cadastrado.");
+            return;
+        }
+        System.out.println("\n====== USUARIOS CADASTRADOS ======");
+        for (Usuario usuario : usuarios) {
+            System.out.println(usuario);
+        }
+
     }
 
 
     public void EmprestarLivro(){
-        System.out.println("\n====== EMPRÉSTIMO DE LIVRO ======");
-        biblioteca.listarLivros();
+        System.out.print("Digite o ID do livro: ");
+        Long idLivro = leitura.nextLong();
 
-        System.out.println("Por favor Digite o nome do livro: ");
-        String nome = leitura.nextLine();
+        System.out.print("Digite o ID do usuário: ");
+        Long idUsuario = leitura.nextLong();
 
-        biblioteca.listarUsuarios();
+        livrosDAO.emprestarLivro(idLivro, idUsuario);
 
-        System.out.println("Por favor Digite o cpf do usuario");
-        String cpf = leitura.nextLine();
-        biblioteca.EmprestarLivro(nome,cpf);
     }
 
     public void DevolverLivro(){
         System.out.println("\n====== DEVOLUÇÃO DE LIVROS======");
-        biblioteca.listarLivros();
+        System.out.print("Digite o ID do livro: ");
+        Long idLivro = leitura.nextLong();
 
-        System.out.println("Por favor digite o nome do livro: ");
-        String nome = leitura.nextLine();
-
-        biblioteca.listarUsuarios();
-        System.out.println("Por favor digite o cpf do usuario: ");
-        String cpf = leitura.nextLine();
-
-        biblioteca.DevolverLivro(nome,cpf);
+        livrosDAO.devolverLivro(idLivro);
     }
 
     public void ExcluirLivro(){
@@ -196,7 +215,7 @@ public class Principal {
         long id = leitura.nextInt();
         leitura.nextLine();
 
-        biblioteca.ExcluirLivro(id);
+        livrosDAO.excluirLivro(id);
 
     }
 
@@ -206,16 +225,25 @@ public class Principal {
 
         String cpf = leitura.nextLine();
 
-        biblioteca.ExcluirUsuario(cpf);
+        usarioDAO.excluirUsuario(cpf);
     }
 
     public void AlterarLivro(){
         System.out.println("\n====== ALTERAR LIVRO ======");
 
-        biblioteca.listarLivros();
+        livrosDAO.listar();
 
-        System.out.print("Digite o nome do livro: ");
-        String nome = leitura.nextLine();
+        System.out.print("Digite o id do livro: ");
+        Long idantigo = leitura.nextLong();
+        leitura.nextLine();
+
+        Livros livro = livrosDAO.buscarPorId(idantigo);
+
+        if (livro == null) {
+            System.out.println("Livro não encontrado!");
+            return;
+        }
+
 
         System.out.print("Digite o novo nome do livro: ");
         String novoTitulo = leitura.nextLine();
@@ -223,27 +251,32 @@ public class Principal {
         System.out.print("Digite o novo nome do autor: ");
         String novoAutor = leitura.nextLine();
 
-        biblioteca.AlterarLivro(nome, novoTitulo, novoAutor);
+        livro.setTitulo(novoTitulo);
+        livro.setAutor(novoAutor);
+
+        LivrosDAO.AlterarLivro(livro);
     }
 
     public void AlterarUsuario(){
         System.out.println("\n====== ALTERAR USUARIO ======");
 
-        biblioteca.listarUsuarios();
+        usarioDAO.listarUsuario();
 
         System.out.println("Digite o cpf do usuario que deseja alterar: ");
         String cpf = leitura.nextLine();
 
         System.out.println("Digite o novo nome do usuario");
-        String novoNome = leitura.nextLine();
+        String Nome = leitura.nextLine();
         System.out.println("Digite o novo cpf do usuario");
         String novoCpf = leitura.nextLine();
         System.out.println("Digite o novo email do usuario");
-        String novoEmail = leitura.nextLine();
+        String Email = leitura.nextLine();
         System.out.println("Digite o novo telefone do usuario");
-        String novoTelefone = leitura.nextLine();
+        String Telefone = leitura.nextLine();
 
-        biblioteca.AlterarUsuario(cpf,novoNome,novoCpf,novoEmail,novoTelefone);
+        Usuario usuario = new Usuario(Nome,novoCpf,Email, Telefone);
+
+        usarioDAO.AlterarUsuario(cpf,usuario);
     }
 }
 
