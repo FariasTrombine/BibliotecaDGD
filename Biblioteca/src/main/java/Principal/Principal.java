@@ -6,10 +6,7 @@ import DAO.LivrosDAO;
 import DAO.UsuarioDAO;
 import Model.Livros;
 import Model.Usuario;
-import Service.Biblioteca;
 
-import javax.crypto.SealedObject;
-import javax.crypto.spec.PSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -20,7 +17,6 @@ public class Principal {
 
     private  Scanner leitura  = new Scanner(System.in);
     ArrayList<Livros> listaLivros = new ArrayList<Livros>();
-    private Biblioteca biblioteca = new Biblioteca();
     private UsuarioDAO usarioDAO = new UsuarioDAO();
     private LivrosDAO livrosDAO = new LivrosDAO();
 
