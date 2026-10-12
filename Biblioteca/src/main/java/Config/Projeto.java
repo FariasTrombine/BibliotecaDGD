@@ -1,4 +1,4 @@
-package Service;
+package Config;
 
 import Principal.Principal;
 import org.springframework.boot.CommandLineRunner;

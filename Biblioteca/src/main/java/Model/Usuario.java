@@ -16,49 +16,22 @@ public class Usuario {
 
     public Usuario() {}
 
-    public Usuario( String nome, String cpf, String email, String telefone, List<Livros> livros) {
-
-        if (cpf == null || cpf.isBlank()) {
-            throw new IllegalArgumentException("CPF inválido");
-        }
-
-        cpf = cpf.replaceAll("\\D", ""); //isso daqui limpa todos os espaço entre letras ou numeros
-        if (cpf.length() != 11) { // aqui estou dizendo que se o cpf for diferente de 11 digito e invalido
-            System.out.println("CPF inválido");
-        }
-
+    public Usuario( String nome, String cpf, String email, String telefone) {
 
         this.nome = nome;
         this.cpf = cpf;
         this.email = email;
         this.telefone = telefone;
-        this.livros = new ArrayList<>();
+
 
     }
 
-    public Usuario(String nome, String cpf, String email, String telefone) {
+    public Usuario (Long id, String nome, String cpf, String email, String telefone) {
+        this.id = id;
         this.nome = nome;
         this.cpf = cpf;
         this.email = email;
         this.telefone = telefone;
-    }
-
-
-    public boolean adicionarLivro(Livros livro){
-        if(livros.size()>=3){
-            System.out.println("O usuário já possui 3 livros emprestado");
-            return false;
-        }
-        livros.add(livro);
-        return true;
-    }
-    public boolean devolverLivro(Livros livro){
-        if(livros.contains(livro)){
-            System.out.println("Este livro não está emprestado para este usuário");
-            return false;
-        }
-        livros.remove(livro);
-        return true;
     }
 
     public Long getId(){

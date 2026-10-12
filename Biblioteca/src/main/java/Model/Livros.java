@@ -7,7 +7,7 @@ public class Livros {
     private String autor;
     private boolean Disponivel;
 
-    public Livros(String titulo, String autor) {
+    public Livros(Long idLivro,String titulo, String autor, boolean Disponivel) {
         this.titulo = titulo;
         this.autor = autor;
         this.Disponivel = true;
@@ -16,24 +16,15 @@ public class Livros {
     public Livros() {
     }
 
-    public void emprestarLivro() {
-        if (!Disponivel) {
-            System.out.println("Livro já está emprestado");
-            return;
-        }
-
-        Disponivel = false;
-        System.out.println("Livro emprestado com sucesso");
+    public Livros(String titulo, String autor) {
+        this.titulo = titulo;
+        this.autor = autor;
     }
 
-    public void devolverLivro() {
-        if (Disponivel) {
-            System.out.println("O livro já está disponível");
-            return;
-        }
+    public Livros(Long idLivroAlterar, String novoTitulo, String novoAutor) {
+        this.titulo = novoTitulo;
+        this.autor = novoAutor;
 
-        Disponivel = true;
-        System.out.println("Livro devolvido com sucesso!");
     }
 
     public Long getIdLivro() {
